@@ -19,21 +19,24 @@ Tracked improvements for the Pokemon Red/Blue recompiler runtime, ordered by pri
 ## Medium Priority
 
 - [ ] **Frame-ready flag race condition** — `ppu.c:393-396`
-  If `frame_ready` isn't cleared by the platform in time, the next frame render is skipped. Can cause dropped frames during animation-heavy sequences.
+  If `frame_ready` isn't cleared by the platform in time, the next frame render is skipped. Can cause dropped frames during animation-heavy sequences. (Attempted fix caused visual regression — needs different approach.)
 
 - [ ] **Audio sample dropping** — `platform_sdl.cpp:183-186`
-  When SDL audio queue exceeds 16KB (~46ms), entire batch is silently discarded. Should always queue audio and use vsync for backpressure.
+  When SDL audio queue exceeds 16KB (~46ms), entire batch is silently discarded. Should always queue audio and use vsync for backpressure. (Buffer tuning caused instability — needs deeper investigation.)
 
-- [ ] **Audio sample rate drift** — `audio.c:168`
-  Using 95 cycles/sample instead of 95.108 causes audio to run ~0.1% fast. Over 10 seconds, ~44 extra samples accumulate. Use fixed-point timing.
+- [x] **Audio sample rate drift** — `audio.c:168`
+  Already fixed in code via 16.16 fixed-point timing (SAMPLE_PERIOD_FIXED = 6233460).
 
 ## Low Priority
 
-- [ ] **Channel 4 (noise) LFSR excessive iteration** — `audio.c:493-517`
-  Tight loop can iterate thousands of times when noise frequency is high. Pre-calculate iteration count and use bit manipulation.
+- [x] **Channel 4 (noise) LFSR excessive iteration** — `audio.c:493-517`
+  Capped at LFSR cycle length (127 for 7-bit, 32767 for 15-bit).
 
 - [ ] **VSync threshold mismatch** — `platform_sdl.cpp:561-579`
   vsync wait threshold (8192 bytes) and queue drop threshold (16384 bytes) create an unstable window.
 
-- [ ] **Window line counter mid-frame WY changes** — `ppu.c:133-195`
-  Window internal line counter doesn't handle WY register changes mid-frame. Only matters for games that modify WY outside VBlank.
+- [x] **Window line counter mid-frame WY changes** — `ppu.c:133-195`
+  Window now triggers on exact LY==WY match, not retroactively.
+
+- [x] **convert_to_rgb debug overhead** — `ppu.c:284-301`
+  Removed dbg_has_nonzero_pixels (23K byte scan per frame) and periodic debug logging.
