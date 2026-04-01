@@ -4,7 +4,7 @@
 [rom]
 path = "roms/Pokemon Red (UE) [S][!].gb"
 output_dir = "generated"
-runtime_dir = "../../gb-recompiled/runtime"
+runtime_dir = "../gb-recompiled/runtime"
 
 [options]
 aggressive_scan = false

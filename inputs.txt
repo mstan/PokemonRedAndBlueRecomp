@@ -1,0 +1,15 @@
+# gb-recompiled input recording
+# format: frame buttons
+# buttons: U,D,L,R,A,B,S(tart),T(selecT) or - for none
+623 S
+647 -
+733 S
+751 -
+781 S
+798 -
+910 S
+918 -
+1049 S
+1063 -
+1103 S
+1124 -
