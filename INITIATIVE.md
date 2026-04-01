@@ -4,16 +4,16 @@ Tracked improvements for the Pokemon Red/Blue recompiler runtime, ordered by pri
 
 ## High Priority
 
-- [ ] **VRAM/OAM write protection during PPU rendering** — `gbrt.c:525-530, 573-579`
+- [x] **VRAM/OAM write protection during PPU rendering** — `gbrt.c:525-530, 573-579`
   VRAM writes during mode 3 and OAM writes during modes 2-3 are not blocked (commented out), allowing mid-scanline data corruption. Read protection is still enforced, creating an asymmetry. Re-enable write protection to match real hardware behavior.
 
-- [ ] **SCX/SCY per-scanline latching** — `ppu.c:492-522`
+- [x] **SCX/SCY per-scanline latching** — `ppu.c:492-522`
   Register changes to SCX/SCY apply immediately instead of being latched at the start of each scanline. Pokemon's title screen scrolling effect and battle transitions depend on precise per-line scroll updates. Implement scanline-level latching.
 
-- [ ] **LCD on/off transition state reset** — `ppu.c:470-486`
+- [x] **LCD on/off transition state reset** — `ppu.c:470-486`
   When LCD is re-enabled, PPU doesn't reset to OAM mode (mode 2) to start a fresh frame cycle. Should reset mode, LY, and cycle counter properly. Causes rendering artifacts after LCD off/on sequences used heavily in battle intros.
 
-- [ ] **Variable mode 3 (pixel transfer) timing** — `ppu.h:26`
+- [x] **Variable mode 3 (pixel transfer) timing** — `ppu.h:26`
   `CYCLES_PIXEL_DRAW` is hardcoded to 172, but real hardware varies (171-289) based on sprite count, SCX fine scroll, and window state. Battle scenes with many sprites have incorrect STAT timing.
 
 ## Medium Priority
