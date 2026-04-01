@@ -1,10 +1,13 @@
-# Pokemon Red (UE) - Game Boy Static Recompiler Configuration
+# Pokemon Red/Blue (UE) - Game Boy Static Recompiler Configuration
 # Entry points generated from pokered disassembly .sym file
+# Red and Blue share identical code layout; only data differs.
 
 [rom]
 path = "roms/Pokemon Red (UE) [S][!].gb"
 output_dir = "generated"
 runtime_dir = "../gb-recompiled/runtime"
+valid_crcs = [0x9F7FDD53, 0xD6DA8A1A]  # Red, Blue
+output_prefix = "Pokemon_Red_Blue"
 
 [options]
 aggressive_scan = false

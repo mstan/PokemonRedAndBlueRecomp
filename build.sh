@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pokemon Red recompiler build script
+# Pokemon Red/Blue recompiler build script
 # Usage:
 #   ./build.sh              # Rebuild game only (incremental)
 #   ./build.sh all          # Full regenerate + rebuild
@@ -17,9 +17,9 @@ RECOMP_DIR="$SCRIPT_DIR/../gb-recompiled"
 GEN_DIR="$SCRIPT_DIR/generated"
 BUILD_DIR="$GEN_DIR/build"
 RECOMP_BUILD="$RECOMP_DIR/build"
-CONFIG="$SCRIPT_DIR/pokemon_red.toml"
+CONFIG="$SCRIPT_DIR/pokemon_red_blue.toml"
 GBRECOMP="$RECOMP_BUILD/bin/gbrecomp.exe"
-EXE="$BUILD_DIR/Pokemon_Red__UE___S____.exe"
+EXE="$BUILD_DIR/Pokemon_Red_Blue.exe"
 
 # Colors
 RED='\033[0;31m'
@@ -83,7 +83,7 @@ build_banks() {
     local banks="$@"
     for bank in $banks; do
         local padded=$(printf "%02x" "0x$bank" 2>/dev/null || printf "%02x" "$bank")
-        local bankfile="$GEN_DIR/Pokemon_Red__UE___S_____bank_${padded}.c"
+        local bankfile="$GEN_DIR/Pokemon_Red_Blue_bank_${padded}.c"
         if [ -f "$bankfile" ]; then
             log "Marking bank $padded for rebuild"
             touch "$bankfile"
@@ -136,7 +136,7 @@ case "${1:-game}" in
         log "Done."
         ;;
     *)
-        echo "Pokemon Red Recompiler Build Script"
+        echo "Pokemon Red/Blue Recompiler Build Script"
         echo ""
         echo "Usage: $0 <command> [args]"
         echo ""

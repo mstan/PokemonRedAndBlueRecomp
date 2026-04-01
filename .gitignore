@@ -11,8 +11,10 @@ banks/
 *.zip
 .mcp.json
 imgui.ini
+keybinds.ini
 *.lock
 *.lock~
 *.gpr
 *.rep/
 pokemon_red_output/
+pokemon_red.toml

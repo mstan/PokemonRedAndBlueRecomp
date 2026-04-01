@@ -1,6 +1,6 @@
-# PokemonRedGBRecomp
+# PokemonRedAndBlueRecomp
 
-Static recompilation of Pokemon Red (Game Boy) for native PC.
+Static recompilation of Pokemon Red and Blue (Game Boy) for native PC.
 Built with the [gb-recompiled](https://github.com/mstan/gbrecompiled) framework.
 
 > **Status: Early — playable through Viridian City.** Title screen, intro, overworld, NPC dialogue, and Pokemon Center healing all work. No known dispatch misses on the tested path. If you find a bug, please open an issue.
@@ -14,17 +14,22 @@ Built with the [gb-recompiled](https://github.com/mstan/gbrecompiled) framework.
 - Saving/loading SRAM to disk
 - Audio (music and SFX)
 - Input recording/playback (`--record` / `--script`)
+- Both Pokemon Red and Pokemon Blue ROMs supported
 
 ## Quick Start
 
-1. Clone with submodules: `git clone --recursive https://github.com/mstan/PokemonRedGBRecomp`
-2. Place your `Pokemon Red (UE) [S][!].gb` ROM in `roms/`
+1. Clone with submodules: `git clone --recursive https://github.com/mstan/PokemonRedAndBlueRecomp`
+2. Place your ROM in `roms/` — either:
+   - `Pokemon Red (UE) [S][!].gb`
+   - `Pokemon - Blue Version (UE) [S][!].gb`
 3. Build and run:
 
 ```bash
 ./build.sh all   # Full build (recompiler + code gen + compile)
 ./build.sh run   # Build + launch
 ```
+
+The game will prompt you to select a ROM on first launch. Both Red and Blue are accepted.
 
 ## Controls
 
@@ -45,9 +50,9 @@ Built with the [gb-recompiled](https://github.com/mstan/gbrecompiled) framework.
 Requires MSYS2 MinGW64 toolchain, CMake 3.20+, Ninja, and SDL2.
 
 ```bash
-git clone --recursive https://github.com/mstan/PokemonRedGBRecomp
-cd PokemonRedGBRecomp
-cp /path/to/Pokemon\ Red\ \(UE\)\ \[S\]\[\!\].gb roms/
+git clone --recursive https://github.com/mstan/PokemonRedAndBlueRecomp
+cd PokemonRedAndBlueRecomp
+cp /path/to/your-pokemon-rom.gb roms/
 ./build.sh all
 ./build.sh run
 ```
@@ -63,7 +68,9 @@ Build commands:
 
 This is a **static recompiler**, not an emulator. The original SM83 (Game Boy CPU) machine code is translated to C at build time, then compiled to native x64. The Game Boy PPU, APU, and memory mapper are simulated by the runtime library.
 
-- `pokemon_red.toml` — recompiler configuration (entry points, data regions)
+Red and Blue share identical code layout — only data tables differ (Pokemon availability, title screen, etc.). The same recompiled code works with either ROM loaded at runtime.
+
+- `pokemon_red_blue.toml` — recompiler configuration (entry points, data regions, valid CRCs)
 - `build.sh` — build script (regen, compile, run)
 - `generated/` — auto-generated C code (not committed)
 - `gb-recompiled/` — framework submodule (recompiler + runtime)
