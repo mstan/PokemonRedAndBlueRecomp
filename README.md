@@ -1,35 +1,51 @@
 # PokemonRedAndBlueRecomp
 
-Static recompilation of Pokemon Red and Blue (Game Boy) for native PC.
-Built with the [gb-recompiled](https://github.com/mstan/gbrecompiled) framework.
+A static recompilation of **Pokemon Red** and **Pokemon Blue** (Game Boy) for native PC.
 
-> **Status: Early — playable through Viridian City.** Title screen, intro, overworld, NPC dialogue, and Pokemon Center healing all work. No known dispatch misses on the tested path. If you find a bug, please open an issue.
+This project uses [gb-recompiled](https://github.com/mstan/gbrecompiled) (forked from [arcanite24/gb-recompiled](https://github.com/arcanite24/gb-recompiled)) to translate the original Game Boy machine code into C, which is then compiled to a native x64 executable. The Game Boy's PPU, APU, and memory mapper are handled by the gb-recompiled runtime library.
 
-## What Works
+[![Pokemon Red/Blue Recompiled - Demo](https://img.youtube.com/vi/pEgJCTf7kgY/0.jpg)](https://www.youtube.com/watch?v=pEgJCTf7kgY)
 
-- Title screen, NEW GAME / OPTIONS menu
-- Overworld exploration (Pallet Town, Route 1, Viridian City)
-- NPC dialogue and interactions
-- Pokemon Center healing sequence
-- Saving/loading SRAM to disk
-- Audio (music and SFX)
-- Input recording/playback (`--record` / `--script`)
-- Both Pokemon Red and Pokemon Blue ROMs supported
+## Status
+
+**Early working prototype.** The game is playable from the title screen through the Elite Four, but this is not a finished product.
+
+- The game runs and is playable with both Red and Blue ROMs
+- Some animations may lag or chug slightly (e.g., certain battle intro spirals)
+- Minor visual glitches may occur in edge cases
+- Code paths not yet discovered by the static analyzer will fall back to an interpreter — this works but is slower than recompiled code
+- Audio works but may stutter briefly during animation-heavy scenes
+- No link cable support
+
+If you encounter a crash or a new interpreter fallback, please open an issue with the address logged to the console.
 
 ## Quick Start
 
-1. Clone with submodules: `git clone --recursive https://github.com/mstan/PokemonRedAndBlueRecomp`
-2. Place your ROM in `roms/` — either:
-   - `Pokemon Red (UE) [S][!].gb`
-   - `Pokemon - Blue Version (UE) [S][!].gb`
-3. Build and run:
+### Pre-built Release
+
+1. Download the latest release from the [Releases](https://github.com/mstan/PokemonRedAndBlueRecomp/releases) page
+2. Extract the zip
+3. Run `Pokemon_Red_Blue.exe`
+4. Select your ROM when prompted — either Pokemon Red or Pokemon Blue (UE) is accepted
+
+### Building from Source
+
+Requires MSYS2 MinGW64 toolchain, CMake 3.20+, Ninja, and SDL2.
 
 ```bash
+git clone --recursive https://github.com/mstan/PokemonRedAndBlueRecomp
+cd PokemonRedAndBlueRecomp
+cp /path/to/your-pokemon-rom.gb roms/
 ./build.sh all   # Full build (recompiler + code gen + compile)
 ./build.sh run   # Build + launch
 ```
 
-The game will prompt you to select a ROM on first launch. Both Red and Blue are accepted.
+Build commands:
+- `./build.sh all` — Full rebuild (recompiler + regenerate + compile)
+- `./build.sh game` — Incremental compile only
+- `./build.sh regen` — Regenerate C code from ROM
+- `./build.sh bank 00 03` — Regenerate + rebuild specific banks
+- `./build.sh run` — Build + launch
 
 ## Controls
 
@@ -45,38 +61,35 @@ The game will prompt you to select a ROM on first launch. Both Red and Blue are 
 |--------|--------|
 | TAB (hold) | Turbo (fast-forward) |
 
-## Building from Source
+## How It Works
 
-Requires MSYS2 MinGW64 toolchain, CMake 3.20+, Ninja, and SDL2.
+This is a **static recompiler**, not an emulator. The original SM83 (Game Boy CPU) machine code is translated to C at build time, then compiled to native x64. At runtime, the executable loads the original ROM file for its data (graphics, maps, text, Pokemon stats, etc.) while executing the recompiled native code.
 
-```bash
-git clone --recursive https://github.com/mstan/PokemonRedAndBlueRecomp
-cd PokemonRedAndBlueRecomp
-cp /path/to/your-pokemon-rom.gb roms/
-./build.sh all
-./build.sh run
-```
+Red and Blue share identical code layout — only data tables differ (Pokemon availability, title screen graphics, etc.). A single recompiled build accepts either ROM at runtime via CRC32 validation.
 
-Build commands:
-- `./build.sh all` — Full rebuild (recompiler + regenerate + compile)
-- `./build.sh game` — Incremental compile only
-- `./build.sh regen` — Regenerate C code from ROM
-- `./build.sh bank 00 03` — Regenerate + rebuild specific banks
-- `./build.sh run` — Build + launch
+When the recompiler encounters a code path it didn't discover during static analysis, it falls back to an interpreter. These fallback addresses can be added to the configuration file (`pokemon_red_blue.toml`) to be included in the next build.
 
-## Architecture
+### Project Structure
 
-This is a **static recompiler**, not an emulator. The original SM83 (Game Boy CPU) machine code is translated to C at build time, then compiled to native x64. The Game Boy PPU, APU, and memory mapper are simulated by the runtime library.
+- `pokemon_red_blue.toml` — Recompiler configuration (entry points, data regions, valid CRCs)
+- `build.sh` — Build script (regen, compile, run)
+- `generated/` — Auto-generated C code from the recompiler (not committed)
+- `gb-recompiled/` — Framework submodule ([mstan/gbrecompiled](https://github.com/mstan/gbrecompiled))
+- `INITIATIVE.md` — Tracked rendering and audio improvement work
 
-Red and Blue share identical code layout — only data tables differ (Pokemon availability, title screen, etc.). The same recompiled code works with either ROM loaded at runtime.
+## Credits
 
-- `pokemon_red_blue.toml` — recompiler configuration (entry points, data regions, valid CRCs)
-- `build.sh` — build script (regen, compile, run)
-- `generated/` — auto-generated C code (not committed)
-- `gb-recompiled/` — framework submodule (recompiler + runtime)
+- **[arcanite24/gb-recompiled](https://github.com/arcanite24/gb-recompiled)** — The original static recompilation framework that this project is built on. All recompiler and runtime code is derived from this project.
+- **[pret/pokered](https://github.com/pret/pokered)** — The pokered disassembly project, used as a reference for entry points and symbol information.
 
 ## Known Limitations
 
-- Only tested through Viridian City area; later game areas may have dispatch misses
-- Minor audio stutter during NPC dialogue (LCD-off VRAM updates)
-- No link cable support
+- Some animation-heavy scenes (e.g., certain battle intro effects) may experience frame drops
+- Audio may stutter briefly during heavy rendering
+- Undiscovered code paths fall back to interpreter (logged to console)
+- No link cable or printer support
+- Only tested with US/Europe ROM versions
+
+## Legal
+
+This project does not include any Nintendo copyrighted material. You must provide your own legally obtained Pokemon Red or Blue ROM file. The generated C code is not committed to this repository.
