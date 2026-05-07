@@ -6,7 +6,7 @@
 path = "roms/Pokemon Red (UE) [S][!].gb"
 output_dir = "generated"
 runtime_dir = "../gb-recompiled/runtime"
-valid_crcs = [0x9F7FDD53, 0xD6DA8A1A]  # Red, Blue
+# CRC32 identity hooks now live in extras.c (game_get_valid_crcs).
 output_prefix = "Pokemon_Red_Blue"
 
 [options]
