@@ -21,3 +21,4 @@ pokemon_red.toml
 
 # Local junction to the workspace-root recompiler clone (was a submodule)
 gb-recompiled/
+generated_ext/
