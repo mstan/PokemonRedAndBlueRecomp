@@ -19,14 +19,49 @@ This project uses [gb-recompiled](https://github.com/mstan/gbrecompiled) (forked
 
 If you encounter a crash or a new interpreter fallback, please open an issue with the address logged to the console.
 
+## Extended Edition (Gen 2 Graft)
+
+Alongside the faithful **Stock** build, there is an **Extended** build that
+back-ports the full **Johto Pokédex — 100 new Pokémon (#152–251)** from
+[pret/pokecrystal](https://github.com/pret/pokecrystal) into the Gen 1 engine,
+bringing Red and Blue to the complete **National Dex #1–251**, plus a batch of
+Gen 2 moves and the real **Dark/Steel** types. Sprites use **native 48×48 back
+sprites** for the grafted mon (no blocky 2× upscale). All of this is produced by
+editing decomp **source** (`../PokemonYellowDecomp/inject_red.py` injecting
+[pret/pokered](https://github.com/pret/pokered)) and reassembling a real ROM —
+not by binary-patching a `.gbc`.
+
+This gives a **bifurcation** of four packages — `{Red, Blue} × {Stock, Extended}`
+— served by two recompiled exes (one per variant; each runs both games via CRC):
+
+| Package | Exe | ROM |
+|---|---|---|
+| `Pokemon_Red_Stock`     | `Pokemon_Red_Blue.exe`     | stock Red |
+| `Pokemon_Blue_Stock`    | `Pokemon_Red_Blue.exe`     | stock Blue |
+| `Pokemon_Red_Extended`  | `Pokemon_Red_Extended.exe` | Gen 2 Red |
+| `Pokemon_Blue_Extended` | `Pokemon_Red_Extended.exe` | Gen 2 Blue |
+
+### Release Packaging
+
+```bash
+scripts/build.sh stock       # recompile stock exe + package Red/Blue Stock zips
+scripts/build.sh extended    # inject Gen2, build both ROMs, recompile, package Extended zips
+# or package an already-built variant directly:
+scripts/package.sh <red|blue> <stock|extended> [version]
+```
+
+Each zip is self-contained (exe + auto-bundled runtime DLLs + `rom.gb` + `rom.cfg`
++ `run.bat`) and lands in `dist/` (gitignored). The zips bundle a ROM, so they
+are **private/personal artifacts — do not distribute**.
+
 ## Quick Start
 
 ### Pre-built Release
 
 1. Download the latest release from the [Releases](https://github.com/mstan/PokemonRedAndBlueRecomp/releases) page
 2. Extract the zip
-3. Run `Pokemon_Red_Blue.exe`
-4. Select your ROM when prompted — either Pokemon Red or Pokemon Blue (UE) is accepted
+3. Run the bundled `.exe` (or `run.bat`)
+4. Stock accepts either Pokemon Red or Blue (UE); Extended runs the bundled Gen 2 ROM
 
 ### Building from Source
 
