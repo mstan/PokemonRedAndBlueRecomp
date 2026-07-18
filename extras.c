@@ -27,3 +27,7 @@ const uint32_t *game_get_valid_crcs(int *out_count) {
 
 /* Multi-version path is preferred; this stays zero. */
 uint32_t game_get_expected_crc32(void) { return 0; }
+
+/* Launcher title (defaults to "GB Recompiled" otherwise). One binary runs both
+ * Red and Blue (see game_get_valid_crcs). */
+const char *game_get_name(void) { return "Pok\xC3\xA9mon Red & Blue"; }
