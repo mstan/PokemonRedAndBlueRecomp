@@ -23,3 +23,21 @@ pokemon_red.toml
 generated_ext/
 dist/
 generated_pre_launcher/
+
+# gbcllr source builds and local legacy data
+/build*/
+/gbcllr/
+/gb-recompiled/
+/recomp-ui/
+/recomp/
+/roms/
+/saves/
+/states/
+/generated/
+/logs/
+/coverage/
+/.coverage-run/
+/.mcp.json.disabled
+/regen_test/
+__pycache__/
+*.pyc
