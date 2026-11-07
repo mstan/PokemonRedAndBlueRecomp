@@ -40,3 +40,13 @@ __pycache__/
 *.log
 imgui.ini
 keybinds.ini
+
+# Retained local products of the legacy toolchain
+/*_output*/
+/recomp_*/
+/_symtest_*/
+/disasm/
+/release-*/
+/*.toml
+/*.cfg
+/*.png
