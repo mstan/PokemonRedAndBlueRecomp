@@ -8,6 +8,22 @@ Adaptive overworld presentation, complete native actor poses and persistent wide
 
 The shared **GB/GBC recomp-ui** provides the cover-art launcher, input and audio settings, and in-game Mods (`Esc`). Adaptive **Fit to screen** is enabled for a fresh profile. Existing player choices are preserved. Enhancements use native hooks and host services; they do not modify the supplied ROM.
 
+## Screenshots
+
+### Viewport sizes
+
+#### Red
+
+| Original | Landscape | Portrait |
+| --- | --- | --- |
+| ![Red — Original](docs/screenshots/red-normal.png) | ![Red — Landscape](docs/screenshots/red-landscape.png) | ![Red — Portrait](docs/screenshots/red-portrait.png) |
+
+#### Blue
+
+| Original | Landscape | Portrait |
+| --- | --- | --- |
+| ![Blue — Original](docs/screenshots/blue-normal.png) | ![Blue — Landscape](docs/screenshots/blue-landscape.png) | ![Blue — Portrait](docs/screenshots/blue-portrait.png) |
+
 ## Builds and current scope
 
 Initial preview validation is complete for the delivered Windows/Linux builds. Full game-content, connected-play and sustained performance qualification remain ongoing; this is an experimental initial release. See the pinned engine’s `STATUS.md` for the accepted scope and known limitations.
