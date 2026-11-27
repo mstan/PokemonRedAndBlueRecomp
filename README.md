@@ -1,140 +1,42 @@
-# PokemonRedAndBlueRecomp
+# Pokémon Red and Blue
 
-A static recompilation of **Pokemon Red** and **Pokemon Blue** (Game Boy) for native PC.
+<img src="assets/boxart/red.png" alt="Pokémon Red boxart" width="200"> <img src="assets/boxart/blue.png" alt="Pokémon Blue boxart" width="200">
 
-This project uses [gb-recompiled](https://github.com/mstan/gbrecompiled) (forked from [arcanite24/gb-recompiled](https://github.com/arcanite24/gb-recompiled)) to translate the original Game Boy machine code into C, which is then compiled to a native x64 executable. The Game Boy's PPU, APU, and memory mapper are handled by the gb-recompiled runtime library.
+Initial **Windows and Linux preview builds powered by gbcllr**. This is the existing game repository with its history retained. It previously used a gb-recompiled fork; the earlier implementation is preserved on [`legacy`](https://github.com/mstan/PokemonRedAndBlueRecomp/tree/legacy). The default branch now builds against the pinned gbcllr engine.
 
-[![Pokemon Red/Blue Recompiled - Demo](https://img.youtube.com/vi/pEgJCTf7kgY/0.jpg)](https://www.youtube.com/watch?v=pEgJCTf7kgY)
+Adaptive overworld presentation, complete native actor poses and persistent wide color transitions. With separately generated native Extended data, the Mods page also offers the added species and optional expanded encounters. Battles and menus retain their original presentation.
 
-## Status
+The shared **GB/GBC recomp-ui** provides the cover-art launcher, input and audio settings, and in-game Mods (`Esc`). Adaptive **Fit to screen** is enabled for a fresh profile. Existing player choices are preserved. Enhancements use native hooks and host services; they do not modify the supplied ROM.
 
-**Early working prototype.** The game is playable from the title screen through the Elite Four, but this is not a finished product.
+## Builds and current scope
 
-- The game runs and is playable with both Red and Blue ROMs
-- Some animations may lag or chug slightly (e.g., certain battle intro spirals)
-- Minor visual glitches may occur in edge cases
-- Code paths not yet discovered by the static analyzer will fall back to an interpreter — this works but is slower than recompiled code
-- Audio works but may stutter briefly during animation-heavy scenes
-- No link cable support
+Initial preview validation is complete for the delivered Windows/Linux builds. Full game-content, connected-play and sustained performance qualification remain ongoing; this is an experimental initial release. See the pinned engine’s `STATUS.md` for the accepted scope and known limitations.
 
-If you encounter a crash or a new interpreter fallback, please open an issue with the address logged to the console.
+Use the current game archive from the project’s release channel when available. Launch its Windows or Linux entry point, and retain your profile when updating. ROMs, boot ROMs, generated cartridge data, user saves and compiled binaries are not committed here.
 
-## Extended Edition (Gen 2 Graft)
+## Build from source
 
-Alongside the faithful **Stock** build, there is an **Extended** build that
-back-ports the full **Johto Pokédex — 100 new Pokémon (#152–251)** from
-[pret/pokecrystal](https://github.com/pret/pokecrystal) into the Gen 1 engine,
-bringing Red and Blue to the complete **National Dex #1–251**, plus a batch of
-Gen 2 moves and the real **Dark/Steel** types. Sprites use **native 48×48 back
-sprites** for the grafted mon (no blocky 2× upscale). All of this is produced by
-editing decomp **source** (`../PokemonYellowDecomp/inject_red.py` injecting
-[pret/pokered](https://github.com/pret/pokered)) and reassembling a real ROM —
-not by binary-patching a `.gbc`.
+Requires CMake 3.24+, Ninja, Python 3.11+, GCC or Clang with GNU C extensions, SDL2 and OpenGL. Windows uses a MinGW-w64 GCC/Clang environment; MSVC C is unsupported.
 
-This gives a **bifurcation** of four packages — `{Red, Blue} × {Stock, Extended}`
-— served by two recompiled exes (one per variant; each runs both games via CRC):
+1. Obtain the gbcllr source, check out `engine_revision` from [`games.json`](games.json), and initialize its pinned submodules with `git submodule update --init --recursive`.
+2. Supply your own original cartridge matching a SHA256 below. A matching boot ROM can be selected in the launcher or supplied as `GBCLLR_BOOT_ROM`.
+3. Configure a separate build directory per variant, build, then open the generated `Play.cmd` (Windows) or `Play.sh` (Linux) beside `gbcllr-run`. These entry points use the shared graphical launcher.
 
-| Package | Exe | ROM |
-|---|---|---|
-| `Pokemon_Red_Stock`     | `Pokemon_Red_Blue.exe`     | stock Red |
-| `Pokemon_Blue_Stock`    | `Pokemon_Red_Blue.exe`     | stock Blue |
-| `Pokemon_Red_Extended`  | `Pokemon_Red_Extended.exe` | Gen 2 Red |
-| `Pokemon_Blue_Extended` | `Pokemon_Red_Extended.exe` | Gen 2 Blue |
-
-### Release Packaging
-
-```bash
-scripts/build.sh stock       # recompile stock exe + package Red/Blue Stock zips
-scripts/build.sh extended    # inject Gen2, build both ROMs, recompile, package Extended zips
-# or package an already-built variant directly:
-scripts/package.sh <red|blue> <stock|extended> [version]
+```sh
+cmake -S . -B build-red -G Ninja -DCMAKE_BUILD_TYPE=Release \
+  -DGBCLLR_ROOT="/path/to/gbcllr" \
+  -DGAME=red -DGBCLLR_ROM="/path/to/owned/game.rom"
+cmake --build build-red --parallel 1
+ctest --test-dir build-red --output-on-failure
 ```
 
-Each zip is self-contained (exe + auto-bundled runtime DLLs + `rom.gb` + `rom.cfg`
-+ `run.bat`) and lands in `dist/` (gitignored). The zips bundle a ROM, so they
-are **private/personal artifacts — do not distribute**.
+Use `-DGAME=blue` and a separate `build-blue` directory for Blue. To include the optional native Extended package, set `GBCLLR_GEN1_EXTENDED_DATA` to data generated with the engine’s `tools/gen1_extended_data.py`; its documented donor inputs are read-only and are not included here.
 
-## Quick Start
+Experimental linked play is included in source-build defaults. Compiling additional compatible cartridges requires `GBCLLR_ADDITIONAL_ROMS`; see the engine README for the exact content and peer-compatibility requirements.
 
-### Pre-built Release
+| Variant | Model | Original cartridge SHA256 |
+| --- | --- | --- |
+| `red` | DMG | `5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b` |
+| `blue` | DMG | `2a951313c2640e8c2cb21f25d1db019ae6245d9c7121f754fa61afd7bee6452d` |
 
-1. Download the latest release from the [Releases](https://github.com/mstan/PokemonRedAndBlueRecomp/releases) page
-2. Extract the zip
-3. Run the bundled `.exe` (or `run.bat`)
-4. Stock accepts either Pokemon Red or Blue (UE); Extended runs the bundled Gen 2 ROM
-
-### Building from Source
-
-Requires MSYS2 MinGW64 toolchain, CMake 3.20+, Ninja, and SDL2.
-
-```bash
-git clone --recursive https://github.com/mstan/PokemonRedAndBlueRecomp
-cd PokemonRedAndBlueRecomp
-cp /path/to/your-pokemon-rom.gb roms/
-./build.sh all   # Full build (recompiler + code gen + compile)
-./build.sh run   # Build + launch
-```
-
-Build commands:
-- `./build.sh all` — Full rebuild (recompiler + regenerate + compile)
-- `./build.sh game` — Incremental compile only
-- `./build.sh regen` — Regenerate C code from ROM
-- `./build.sh bank 00 03` — Regenerate + rebuild specific banks
-- `./build.sh run` — Build + launch
-
-## Controls
-
-| GB Button | Keyboard |
-|-----------|----------|
-| D-Pad     | Arrow keys |
-| A         | Z |
-| B         | X |
-| Start     | Enter |
-| Select    | Tab |
-
-| Hotkey | Action |
-|--------|--------|
-| TAB (hold) | Turbo (fast-forward) |
-
-## How It Works
-
-This is a **static recompiler**, not an emulator. The original SM83 (Game Boy CPU) machine code is translated to C at build time, then compiled to native x64. At runtime, the executable loads the original ROM file for its data (graphics, maps, text, Pokemon stats, etc.) while executing the recompiled native code.
-
-Red and Blue share identical code layout — only data tables differ (Pokemon availability, title screen graphics, etc.). A single recompiled build accepts either ROM at runtime via CRC32 validation.
-
-When the recompiler encounters a code path it didn't discover during static analysis, it falls back to an interpreter. These fallback addresses can be added to the configuration file (`pokemon_red_blue.toml`) to be included in the next build.
-
-### Project Structure
-
-- `pokemon_red_blue.toml` — Recompiler configuration (entry points, data regions, valid CRCs)
-- `build.sh` — Build script (regen, compile, run)
-- `generated/` — Auto-generated C code from the recompiler (not committed)
-- `gb-recompiled/` — Framework submodule ([mstan/gbrecompiled](https://github.com/mstan/gbrecompiled))
-- `INITIATIVE.md` — Tracked rendering and audio improvement work
-
-## Credits
-
-- **[arcanite24/gb-recompiled](https://github.com/arcanite24/gb-recompiled)** — The original static recompilation framework that this project is built on. All recompiler and runtime code is derived from this project.
-- **[pret/pokered](https://github.com/pret/pokered)** — The pokered disassembly project, used as a reference for entry points and symbol information.
-
-## Known Limitations
-
-- Some animation-heavy scenes (e.g., certain battle intro effects) may experience frame drops
-- Audio may stutter briefly during heavy rendering
-- Undiscovered code paths fall back to interpreter (logged to console)
-- No link cable or printer support
-- Only tested with US/Europe ROM versions
-
-## Legal
-
-This project does not include any Nintendo copyrighted material. You must provide your own legally obtained Pokemon Red or Blue ROM file. The generated C code is not committed to this repository.
-
----
-
-<p align="center">
-  <sub><b>R.A.I.D. — Retro AI Development</b> · a Discord for AI-assisted retro reverse-engineering, decomp &amp; recomp</sub>
-</p>
-
-<p align="center">
-  <a href="https://discord.gg/Ad9BwSzctP"><img src=".github/raid-discord.png" alt="Join the Retro AI Development (R.A.I.D.) Discord" width="200"></a>
-</p>
+Native in-game saves and settings use the engine’s per-cartridge user profile. Back them up before changing installations. Save states are specific to a build. Artwork attribution is in [assets/boxart/README.md](assets/boxart/README.md).
