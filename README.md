@@ -43,7 +43,6 @@ cmake -S . -B build-red -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DGBCLLR_ROOT="/path/to/gbcllr" \
   -DGAME=red -DGBCLLR_ROM="/path/to/owned/game.rom"
 cmake --build build-red --parallel 1
-ctest --test-dir build-red --output-on-failure
 ```
 
 Use `-DGAME=blue` and a separate `build-blue` directory for Blue. To include the optional native Extended package, set `GBCLLR_GEN1_EXTENDED_DATA` to data generated with the engine’s `tools/gen1_extended_data.py`; its documented donor inputs are read-only and are not included here.

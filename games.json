@@ -1,15 +1,15 @@
 {
-  "engine_revision": "5d2dfd788ad18d22b15490bb13fc716f5dcec200",
+  "engine_revision": "12cf888903c97fd9a0e0a0831f0748e5cb286c9d",
   "default": "red",
   "games": {
     "red": {
-      "title": "Pok\u00c3\u00a9mon Red",
+      "title": "Pokémon Red",
       "model": "dmg",
       "sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
       "boxart": "assets/boxart/red.tga"
     },
     "blue": {
-      "title": "Pok\u00c3\u00a9mon Blue",
+      "title": "Pokémon Blue",
       "model": "dmg",
       "sha256": "2a951313c2640e8c2cb21f25d1db019ae6245d9c7121f754fa61afd7bee6452d",
       "boxart": "assets/boxart/blue.tga"
